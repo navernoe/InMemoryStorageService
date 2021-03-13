@@ -55,7 +55,7 @@ namespace InMemoryStorageService.Controllers
             {
                 await Task.Run(() => _storage[key] = value);
 
-                return Ok($"Для ключа <{key}> установлено значение <{value}>");
+                return Ok($"Key <{key}> was set to <{value}> value successfully");
             }
             catch (InvalidStorageKeyException e)
             {
@@ -71,7 +71,7 @@ namespace InMemoryStorageService.Controllers
             {
                 await Task.Run(() => _storage.remove(key));
 
-                return Ok($"Значение ключа <{key}> успешно удалено");
+                return Ok($"Value for <{key}> key was removed successfully");
             }
             catch (InvalidStorageKeyException e)
             {

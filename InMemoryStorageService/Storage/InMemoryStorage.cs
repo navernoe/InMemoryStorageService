@@ -18,7 +18,7 @@ namespace InMemoryStorageService.Storage
                 }
                 else
                 {
-                    throw new InvalidStorageKeyException($"Неверное значение ключа <{key}>");
+                    throw new InvalidStorageKeyException($"Invalid key <{key}>");
                 }
             }
 
@@ -42,7 +42,7 @@ namespace InMemoryStorageService.Storage
                 data[key] = null;
             } else
             {
-                throw new InvalidStorageKeyException($"Неверное значение ключа <{key}>");
+                throw new InvalidStorageKeyException($"Invalid key <{key}>");
             }
         }
 
@@ -50,7 +50,7 @@ namespace InMemoryStorageService.Storage
         {
             if (string.IsNullOrEmpty(key))
             {
-                throw new InvalidStorageKeyException($"Неверное значение ключа <{key}>");
+                throw new InvalidStorageKeyException($"Invalid key <{key}>");
             }
         }
 
