@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InMemoryStorageService", "InMemoryStorageService\InMemoryStorageService.csproj", "{434118F0-2F8A-4DB8-A14C-84BCE8BD06EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InMemoryStorageService.Tests", "InMemoryStorageService.Tests\InMemoryStorageService.Tests.csproj", "{75672A3A-BA96-4776-B46E-D62F1A939993}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{434118F0-2F8A-4DB8-A14C-84BCE8BD06EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{434118F0-2F8A-4DB8-A14C-84BCE8BD06EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{434118F0-2F8A-4DB8-A14C-84BCE8BD06EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{434118F0-2F8A-4DB8-A14C-84BCE8BD06EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75672A3A-BA96-4776-B46E-D62F1A939993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75672A3A-BA96-4776-B46E-D62F1A939993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75672A3A-BA96-4776-B46E-D62F1A939993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75672A3A-BA96-4776-B46E-D62F1A939993}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {04F61F9B-471D-443D-8D2D-CAD8DA59F647}
+	EndGlobalSection
+EndGlobal
