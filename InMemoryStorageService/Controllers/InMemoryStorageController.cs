@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using InMemoryStorageService.Exceptions;
 using InMemoryStorageService.Storage;
 
-
 namespace InMemoryStorageService.Controllers
 {
     [ApiController]
@@ -23,13 +22,25 @@ namespace InMemoryStorageService.Controllers
 
         [HttpGet]
         [Route("all")]
-        public async Task<IEnumerable<RowModel>> GetAll()
+        public async Task<Dictionary<string, string>> GetAll()
         {
             return await Task.Run(
-                () => from row in _storage
-                        where !string.IsNullOrEmpty(row.value)
-                        select row
+                () => _storage
+                        .ToDictionary(row => row.Key, row => row.Value)
             );
+        }
+
+        [HttpGet]
+        [Route("keys")]
+        public async Task<dynamic> GetKeys()
+        {
+            IEnumerable<string> keys = await Task.Run(
+                () => _storage
+                        .Where(row => !string.IsNullOrEmpty(row.Value))
+                        .Select(row => row.Key)
+            );
+
+            return new { value = keys };
         }
 
         [HttpGet]
@@ -37,9 +48,9 @@ namespace InMemoryStorageService.Controllers
         {
             try
             {
-                string value = await Task.Run(() => _storage[key]); 
+                string value = await Task.Run(() =>  _storage[key]);
 
-                return value;
+                return new { value };
             }
             catch(InvalidStorageKeyException e)
             {

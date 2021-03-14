@@ -63,24 +63,24 @@ namespace InMemoryStorageService.Tests
         [Test]
         public void getAllRows()
         {
-            RowModel[] expectedRows = new RowModel[]
+            Dictionary<string, string> rows = new Dictionary<string, string>
             {
-                 new RowModel("1", "test value1"),
-                 new RowModel("2", "test value2"),
-                 new RowModel("3", "test value3"),
-                 new RowModel("4", null),
+                 ["1"] = "test value1",
+                 ["2"] = "test value2",
+                 ["3"] = "test value3",
+                 ["4"] = null,
             };
 
-            IEnumerable<string> expectedKeys = from row in expectedRows select row.key;
-            IEnumerable<string> expectedValues = from row in expectedRows select row.value;
+            IEnumerable<string> expectedKeys = from row in rows select row.Key;
+            IEnumerable<string> expectedValues = from row in rows select row.Value;
 
-            foreach (RowModel row in expectedRows)
+            foreach (var row in rows)
             {
-                storage[row.key] = row.value;
+                storage[row.Key] = row.Value;
             }
 
-            IEnumerable<string> actualKeys = from row in storage select row.key;
-            IEnumerable<string> actualValues = from row in storage select row.value;
+            IEnumerable<string> actualKeys = from row in storage select row.Key;
+            IEnumerable<string> actualValues = from row in storage select row.Value;
 
             Assert.That(actualKeys, Is.EqualTo(expectedKeys));
             Assert.That(actualValues, Is.EqualTo(expectedValues));

@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace InMemoryStorageService.Storage
 {
-    public class InMemoryStorage: IEnumerable<RowModel>
+    public class InMemoryStorage: IEnumerable<KeyValuePair<string, string>>
     {
         public Dictionary<string, string> data = new Dictionary<string, string>();
 
@@ -61,11 +61,11 @@ namespace InMemoryStorageService.Storage
             return data.ContainsKey(key);
         }
 
-        public IEnumerator<RowModel> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            foreach(KeyValuePair<string, string> pair in data)
+            foreach(var pair in data)
             {
-                yield return new RowModel(pair.Key, pair.Value);
+                yield return pair;
             }
         }
 
