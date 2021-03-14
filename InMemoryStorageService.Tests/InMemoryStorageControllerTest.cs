@@ -20,6 +20,7 @@ namespace InMemoryStorageService.Tests
             controller = new InMemoryStorageController(storage);
         }
 
+
         [TestCase("key", "112233")]
         [TestCase("key with spaces", "hello world")]
         public async Task setValue(string key, string value)
@@ -38,6 +39,7 @@ namespace InMemoryStorageService.Tests
             Assert.IsInstanceOf<BadRequestObjectResult>(response);
             Assert.AreEqual($"Invalid key <{key}>", response.Value);
         }
+
 
         [Test]
         public async Task setAndGetValue()
@@ -64,6 +66,7 @@ namespace InMemoryStorageService.Tests
             Assert.AreEqual($"Invalid key <{notExistsKey}>", response.Value);
         }
 
+
         [Test]
         public async Task removeValue()
         {
@@ -78,20 +81,23 @@ namespace InMemoryStorageService.Tests
             Assert.IsNull(actualValue);
         }
 
+
         [Test]
         public async Task removeNotExistsValue()
         {
             string notExistsKey = "not exists key";
 
             var response = await controller.RemoveValueByKey(notExistsKey);
+
             Assert.IsInstanceOf<BadRequestObjectResult>(response);
             Assert.AreEqual($"Invalid key <{notExistsKey}>", response.Value);
         }
 
+
         [Test]
         public async Task getAllValues()
         {
-            Dictionary<string, string> rows = new Dictionary<string, string>
+            Dictionary<string, string> expectedRows = new Dictionary<string, string>
             {
                 ["1"] = "test value1",
                 ["2"] = "test value2",
@@ -99,22 +105,15 @@ namespace InMemoryStorageService.Tests
                 ["4"] = null
             };
 
-
-            IEnumerable<string> expectedKeys = from row in rows select row.Key;
-            IEnumerable<string> expectedValues = from row in rows select row.Value;
-
-            foreach (var row in rows)
+            foreach (var row in expectedRows)
             {
                 await controller.SetValueByKey(row.Key, row.Value);
             }
 
             Dictionary<string, string> actualRows = await controller.GetAll();
-            IEnumerable<string> actualKeys = from row in actualRows select row.Key;
-            IEnumerable<string> actualValues = from row in actualRows select row.Value;
-
-            Assert.That(actualKeys, Is.EqualTo(expectedKeys));
-            Assert.That(actualValues, Is.EqualTo(expectedValues));
+            Assert.AreEqual(actualRows, expectedRows);
         }
+
 
         [Test]
         public async Task getKeys()

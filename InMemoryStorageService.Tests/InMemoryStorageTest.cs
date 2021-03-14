@@ -16,6 +16,7 @@ namespace InMemoryStorageService.Tests
             storage = new InMemoryStorage();
         }
 
+
         [TestCase("a", "22")]
         [TestCase("3", "sometext")]
         [TestCase("12xy", "value with spaces")]
@@ -27,12 +28,13 @@ namespace InMemoryStorageService.Tests
             Assert.AreEqual(value, storage[key]);
         }
 
+
         [TestCase(null, "set value without key")]
         public void setValueNegative(string key, string value)
         {
-
             Assert.Throws<InvalidStorageKeyException>(() => storage[key] = value);
         }
+
 
         [TestCase(null)]
         [TestCase("not existed storage key")]
@@ -41,6 +43,7 @@ namespace InMemoryStorageService.Tests
             var test = "";
             Assert.Throws<InvalidStorageKeyException>(() => test = storage[key]);
         }
+
 
         [TestCase("a")]
         [TestCase("12")]
@@ -52,6 +55,7 @@ namespace InMemoryStorageService.Tests
             Assert.IsNull(storage[key]);
         }
 
+
         [Test]
         public void removeValueNegative()
         {
@@ -60,30 +64,27 @@ namespace InMemoryStorageService.Tests
              );
         }
 
+
         [Test]
         public void getAllRows()
         {
-            Dictionary<string, string> rows = new Dictionary<string, string>
+            Dictionary<string, string> expectedRows = new Dictionary<string, string>
             {
                  ["1"] = "test value1",
                  ["2"] = "test value2",
                  ["3"] = "test value3",
-                 ["4"] = null,
+                 ["4"] = null
             };
 
-            IEnumerable<string> expectedKeys = from row in rows select row.Key;
-            IEnumerable<string> expectedValues = from row in rows select row.Value;
-
-            foreach (var row in rows)
+            foreach (var row in expectedRows)
             {
                 storage[row.Key] = row.Value;
             }
 
-            IEnumerable<string> actualKeys = from row in storage select row.Key;
-            IEnumerable<string> actualValues = from row in storage select row.Value;
-
-            Assert.That(actualKeys, Is.EqualTo(expectedKeys));
-            Assert.That(actualValues, Is.EqualTo(expectedValues));
+            Assert.AreEqual(
+                expectedRows,
+                storage.ToDictionary(row => row.Key, row => row.Value)
+            );
         }
 
     }
