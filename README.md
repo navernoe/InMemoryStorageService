@@ -10,6 +10,10 @@ Simple in-memory key-value store with CRUD operations by REST API
 |   Remove value by key   |  POST    | `/storage/remove?key={key}`            |
 
 
+# Run it
+`docker run --rm -e ASPNETCORE_URLS=http://+:5000 -p 5000:5000 navernoe/in-memory-storage-service`
+
+
 # Task Description
 
 > Реализовать (.net core) доступное по сети in-memory key-value хранилище (сервис).
