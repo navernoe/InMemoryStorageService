@@ -1,9 +1,11 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using InMemoryStorageService.Exceptions;
 using InMemoryStorageService.Storage;
+
 
 namespace InMemoryStorageService.Controllers
 {
@@ -22,51 +24,61 @@ namespace InMemoryStorageService.Controllers
 
         [HttpGet]
         [Route("all")]
-        public async Task<Dictionary<string, string>> GetAll()
+        public Dictionary<string, string> GetAll()
         {
-            return await Task.Run(
-                () => _storage
-                        .ToDictionary(row => row.Key, row => row.Value)
-            );
+            return _storage.ToDictionary(row => row.Key, row => row.Value);
         }
 
         [HttpGet]
         [Route("keys")]
-        public async Task<dynamic> GetKeys()
+        public dynamic GetKeys()
         {
-            IEnumerable<string> keys = await Task.Run(
-                () => _storage
+            IEnumerable<string> keys = _storage
                         .Where(row => !string.IsNullOrEmpty(row.Value))
-                        .Select(row => row.Key)
-            );
+                        .Select(row => row.Key);
 
             return new { value = keys };
         }
 
         [HttpGet]
-        public async Task<dynamic> GetValueByKey([FromQuery] string key)
+        [Route("{key}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public dynamic GetValueByKey(string key)
         {
             try
             {
-                string value = await Task.Run(() =>  _storage[key]);
+                string value = _storage[key];
 
                 return new { value };
             }
-            catch(InvalidStorageKeyException e)
+            catch (InvalidStorageKeyException e)
             {
                 return BadRequest(e.Message);
+            }
+            catch (NotExistsStorageKeyException e)
+            {
+                return NotFound(e.Message);
             }
         }
 
         [HttpPost]
         [Route("set")]
-        public async Task<ObjectResult> SetValueByKey(string key, string value)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ObjectResult SetValueByKey([FromBody] SetParams parameters)
         {
+            string key = parameters.key;
+            string value = parameters.value;
+
             try
             {
-                await Task.Run(() => _storage[key] = value);
+                _storage[key] = value;
 
-                return Ok($"Key <{key}> was set to <{value}> value successfully");
+                return Created(
+                    WebUtility.UrlEncode($"/storage/{key}"),
+                    new Dictionary<string,string> { [key]  = _storage[key] }
+                );
             }
             catch (InvalidStorageKeyException e)
             {
@@ -74,19 +86,26 @@ namespace InMemoryStorageService.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("remove")]
-        public async Task<ObjectResult> RemoveValueByKey(string key)
+        [HttpDelete]
+        [Route("remove/{key}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public ObjectResult RemoveValueByKey(string key)
         {
             try
             {
-                await Task.Run(() => _storage.remove(key));
+                _storage.remove(key);
 
                 return Ok($"Value for <{key}> key was removed successfully");
             }
             catch (InvalidStorageKeyException e)
             {
                 return BadRequest(e.Message);
+            }
+            catch (NotExistsStorageKeyException e)
+            {
+                return NotFound(e.Message);
             }
         }
     }

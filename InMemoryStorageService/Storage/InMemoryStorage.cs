@@ -1,14 +1,17 @@
+using System;
 using System.Collections.Generic;
 using InMemoryStorageService.Exceptions;
 using System.Collections;
+using System.Collections.Concurrent;
+using InMemoryStorageService.Storage.Interface;
 
 namespace InMemoryStorageService.Storage
 {
-    public class InMemoryStorage: IEnumerable<KeyValuePair<string, string>>
+    public class InMemoryStorage: IKeyValueStorage<string, string, KeyValuePair<string, string>>
     {
-        public Dictionary<string, string> data = new Dictionary<string, string>();
+        private ConcurrentDictionary<string, string> data = new ConcurrentDictionary<string, string>();
 
-        public dynamic this[string key]
+        public string this[string key]
         {
             get
             {
@@ -18,20 +21,14 @@ namespace InMemoryStorageService.Storage
                 }
                 else
                 {
-                    throw new InvalidStorageKeyException($"Invalid key <{key}>");
+                    throw new NotExistsStorageKeyException($"Key <{key}> doesn't exists");
                 }
             }
 
             set
             {
-                if (isKeyExists(key))
-                {
-                    data[key] = value;
-                }
-                else
-                {
-                    data.Add(key, value);
-                }
+                validate(key);
+                data[key] = value;
             }
         }
 
@@ -39,11 +36,31 @@ namespace InMemoryStorageService.Storage
         {
             if (isKeyExists(key))
             {
-                data[key] = null;
+                ((IDictionary)data).Remove(key);
             } else
             {
-                throw new InvalidStorageKeyException($"Invalid key <{key}>");
+                throw new NotExistsStorageKeyException($"Key <{key}> doesn't exists");
             }
+        }
+
+        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+        {
+            foreach (var pair in data)
+            {
+                yield return pair;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        private bool isKeyExists(string key)
+        {
+            validate(key);
+
+            return data.ContainsKey(key);
         }
 
         private void validate(string key)
@@ -54,24 +71,5 @@ namespace InMemoryStorageService.Storage
             }
         }
 
-        private bool isKeyExists(string key)
-        {
-            validate(key);
-
-            return data.ContainsKey(key);
-        }
-
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
-        {
-            foreach(var pair in data)
-            {
-                yield return pair;
-            }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
     }
 }

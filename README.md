@@ -1,13 +1,13 @@
 # InMemoryStorageService
 Simple in-memory key-value store with CRUD operations by REST API
  
-|       Operation         |  Method  |                URL                     |
-|:------------------------|:--------:|:---------------------------------------|
-|   Get all rows          |  GET     | `/storage/all`                         | 
-|   Get not empty keys    |  GET     | `/storage/keys`                        | 
-|   Get value by key      |  GET     | `/storage?key={key}`                   |  
-|   Set value by key      |  POST    | `/storage/set?key={key}&value={value}` |  
-|   Remove value by key   |  POST    | `/storage/remove?key={key}`            |
+|       Operation         |  Method  |                URL                     |                PARAMS                |
+|:------------------------|:--------:|:---------------------------------------|:------------------------------------:|
+|   Get all rows          |  GET     | `/storage/all`                         | -                                    |
+|   Get not empty keys    |  GET     | `/storage/keys`                        | -                                    |
+|   Get value by key      |  GET     | `/storage/{key}`                       | -                                    |
+|   Set value by key      |  POST    | `/storage/set`                         | `{ "key": string, "value": string }` |
+|   Remove value by key   |  DELETE  | `/storage/remove/{key}`                | -                                    |
 
 
 # Run it

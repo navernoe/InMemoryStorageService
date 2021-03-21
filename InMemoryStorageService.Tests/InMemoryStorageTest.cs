@@ -36,13 +36,20 @@ namespace InMemoryStorageService.Tests
         }
 
 
-        [TestCase(null)]
         [TestCase("not existed storage key")]
-        public void getValueNegative(string key)
+        public void getValueByNotExistsKey(string key)
+        {
+            var test = "";
+            Assert.Throws<NotExistsStorageKeyException>(() => test = storage[key]);
+        }
+
+        [TestCase(null)]
+        public void getValueByNullKey(string key)
         {
             var test = "";
             Assert.Throws<InvalidStorageKeyException>(() => test = storage[key]);
         }
+
 
 
         [TestCase("a")]
@@ -52,14 +59,15 @@ namespace InMemoryStorageService.Tests
             storage[key] = "test value";
             storage.remove(key);
 
-            Assert.IsNull(storage[key]);
+            var test = "";
+            Assert.Throws<NotExistsStorageKeyException>(() => test = storage[key]);
         }
 
 
         [Test]
         public void removeValueNegative()
         {
-            Assert.Throws<InvalidStorageKeyException>(
+            Assert.Throws<NotExistsStorageKeyException>(
                 () => storage.remove("not existed key")
              );
         }

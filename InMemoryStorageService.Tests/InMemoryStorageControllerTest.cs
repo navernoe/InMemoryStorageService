@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -23,18 +22,20 @@ namespace InMemoryStorageService.Tests
 
         [TestCase("key", "112233")]
         [TestCase("key with spaces", "hello world")]
-        public async Task setValue(string key, string value)
+        public void setValue(string key, string value)
         {
-            await controller.SetValueByKey(key, value);
+            SetParams parametes = new SetParams { key = key, value = value };
+            controller.SetValueByKey(parametes);
 
             Assert.AreEqual(value, storage[key]);
         }
 
 
         [TestCase(null, "key-null")]
-        public async Task setByNullKey(string key, string value)
+        public void setByNullKey(string key, string value)
         {
-            var response = await controller.SetValueByKey(key, value);
+            SetParams parametes = new SetParams { key = key, value = value };
+            var response = controller.SetValueByKey(parametes);
 
             Assert.IsInstanceOf<BadRequestObjectResult>(response);
             Assert.AreEqual($"Invalid key <{key}>", response.Value);
@@ -42,13 +43,14 @@ namespace InMemoryStorageService.Tests
 
 
         [Test]
-        public async Task setAndGetValue()
+        public void setAndGetValue()
         {
             string key = "test key";
             string value = "test value";
+            SetParams parametes = new SetParams { key = key, value = value };
 
-            await controller.SetValueByKey(key, value);
-            var response = await controller.GetValueByKey(key);
+            controller.SetValueByKey(parametes);
+            var response = controller.GetValueByKey(key);
             string resultValue = response?.GetType().GetProperty("value")?.GetValue(response);
 
             Assert.AreEqual(resultValue, value);
@@ -56,46 +58,58 @@ namespace InMemoryStorageService.Tests
 
 
         [Test]
-        public async Task getByNotExistsKey()
+        public void getByNotExistsKey()
         {
             string notExistsKey = "not exists key";
 
-            var response = await controller.GetValueByKey(notExistsKey);
+            var response = controller.GetValueByKey(notExistsKey);
 
-            Assert.IsInstanceOf<BadRequestObjectResult>(response);
-            Assert.AreEqual($"Invalid key <{notExistsKey}>", response.Value);
+            Assert.IsInstanceOf<NotFoundObjectResult>(response);
+            Assert.AreEqual($"Key <{notExistsKey}> doesn't exists", response.Value);
         }
 
 
         [Test]
-        public async Task removeValue()
+        public void removeValue()
         {
             string key = "test key";
             string value = "test value";
+            SetParams parametes = new SetParams { key = key, value = value };
 
-            await controller.SetValueByKey(key, value);
-            await controller.RemoveValueByKey(key);
+            controller.SetValueByKey(parametes);
+            controller.RemoveValueByKey(key);
 
-            var response = await controller.GetValueByKey(key);
+            var response = controller.GetValueByKey(key);
             string actualValue = response?.GetType().GetProperty("value")?.GetValue(response);
             Assert.IsNull(actualValue);
         }
 
 
         [Test]
-        public async Task removeNotExistsValue()
+        public void removeByNotExistsKey()
         {
             string notExistsKey = "not exists key";
 
-            var response = await controller.RemoveValueByKey(notExistsKey);
+            var response = controller.RemoveValueByKey(notExistsKey);
+
+            Assert.IsInstanceOf<NotFoundObjectResult>(response);
+            Assert.AreEqual($"Key <{notExistsKey}> doesn't exists", response.Value);
+        }
+
+        [Test]
+        public void removeByNullKey()
+        {
+            string nullKey = null;
+
+            var response = controller.RemoveValueByKey(nullKey);
 
             Assert.IsInstanceOf<BadRequestObjectResult>(response);
-            Assert.AreEqual($"Invalid key <{notExistsKey}>", response.Value);
+            Assert.AreEqual($"Invalid key <{nullKey}>", response.Value);
         }
 
 
         [Test]
-        public async Task getAllValues()
+        public void getAllValues()
         {
             Dictionary<string, string> expectedRows = new Dictionary<string, string>
             {
@@ -107,16 +121,17 @@ namespace InMemoryStorageService.Tests
 
             foreach (var row in expectedRows)
             {
-                await controller.SetValueByKey(row.Key, row.Value);
+                SetParams parametes = new SetParams { key = row.Key, value = row.Value };
+                controller.SetValueByKey(parametes);
             }
 
-            Dictionary<string, string> actualRows = await controller.GetAll();
+            Dictionary<string, string> actualRows = controller.GetAll();
             Assert.AreEqual(actualRows, expectedRows);
         }
 
 
         [Test]
-        public async Task getKeys()
+        public void getKeys()
         {
             Dictionary<string, string> rows = new Dictionary<string, string>
             {
@@ -129,15 +144,15 @@ namespace InMemoryStorageService.Tests
 
             foreach (var row in rows)
             {
-                await controller.SetValueByKey(row.Key, row.Value);
+                controller.SetValueByKey(new SetParams { key = row.Key, value = row.Value });
             }
 
-            await controller.SetValueByKey("4", null);
+            controller.SetValueByKey(new SetParams { key = "4", value = null });
 
-            var response = await controller.GetKeys();
+            var response = controller.GetKeys();
             IEnumerable<string> actualKeys = response?.GetType().GetProperty("value")?.GetValue(response);
 
-            Assert.That(actualKeys, Is.EqualTo(expectedKeys));
+            Assert.That(actualKeys, Is.EquivalentTo(expectedKeys));
         }
     }
 }

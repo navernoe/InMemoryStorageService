@@ -2,16 +2,16 @@
 
 namespace InMemoryStorageService.Exceptions
 {
-    public class InvalidStorageKeyException: Exception
+    public class NotExistsStorageKeyException: Exception
     {
-        public InvalidStorageKeyException()
+        public NotExistsStorageKeyException()
         { }
 
-        public InvalidStorageKeyException(string message)
+        public NotExistsStorageKeyException(string message)
             : base(message)
         { }
 
-        public InvalidStorageKeyException(string message, Exception inner)
+        public NotExistsStorageKeyException(string message, Exception inner)
             : base(message, inner)
         { }
     }
